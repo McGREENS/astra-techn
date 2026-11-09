@@ -27,7 +27,8 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-inter), Inter, Arial, sans-serif; }
+h1, h2, h3, h4 { font-family: var(--font-manrope), Manrope, var(--font-inter), sans-serif; letter-spacing: -0.035em; }
 button, a, input { font: inherit; }
 .hero-grid { background-image: radial-gradient(circle at 78% 42%, rgba(125,196,255,.28), transparent 28%), linear-gradient(rgba(40,114,168,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(40,114,168,.055) 1px, transparent 1px); background-size: auto, 44px 44px, 44px 44px; }
 .hero-grid::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(244,249,255,.92), rgba(244,249,255,.26) 72%, transparent); }
