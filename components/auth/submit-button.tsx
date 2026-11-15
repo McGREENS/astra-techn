@@ -1,9 +1,8 @@
 import type { ComponentProps } from 'react'
 import { Loader2 } from 'lucide-react'
-
 import { cn } from '@/lib/utils'
 
-type Variant = 'primary' | 'light' | 'outline'
+type Variant = 'primary' | 'outline'
 
 type Props = ComponentProps<'button'> & { loading?: boolean; variant?: Variant }
 
@@ -21,11 +20,13 @@ export function SubmitButton({
       disabled={loading || disabled}
       data-slot="submit-button"
       className={cn(
-        'inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7DC4FF] disabled:cursor-not-allowed disabled:opacity-60',
-        variant === 'primary' && 'bg-[#0A1F44] text-white hover:bg-[#173B76]',
-        variant === 'light' &&
-          'bg-[#7DC4FF] text-[#0A1F44] shadow-[0_8px_24px_rgba(125,196,255,.2)] hover:bg-[#a6d7ff]',
-        variant === 'outline' && 'border border-[#B8D4EE] bg-white text-[#0A1F44] hover:bg-[#F4F9FF]',
+        // Brand: buttons soften to 2 px (rounded-sm), label weight + tracking
+        'inline-flex h-12 w-full items-center justify-center gap-2 rounded-sm',
+        'text-xs font-medium uppercase tracking-widest transition',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#CFD9F6]',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        variant === 'primary' && 'bg-[#0B0B0D] text-white hover:bg-[#3A3D44]',
+        variant === 'outline' && 'border border-[#C9CACD] bg-white text-[#0B0B0D] hover:bg-[#E9E9EA]',
         className,
       )}
       {...props}

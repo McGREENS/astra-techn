@@ -2,30 +2,33 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 
-import { getCurrentUser, logout as mockLogout, type MockUser } from '@/lib/mock-auth'
+import { getCurrentUser, logOut as logOutAction } from '@/lib/auth/actions'
+import type { SafeUser } from '@/lib/auth/types'
 
 interface AuthContextValue {
-  user: MockUser | null
+  user: SafeUser | null
   loading: boolean
-  refresh: () => void
-  logout: () => void
+  refresh: () => Promise<void>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<MockUser | null>(null)
+  const [user, setUser] = useState<SafeUser | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const refresh = useCallback(() => setUser(getCurrentUser()), [])
-
-  useEffect(() => {
-    setUser(getCurrentUser())
-    setLoading(false)
+  // Re-read the current user from the server session.
+  const refresh = useCallback(async () => {
+    setUser(await getCurrentUser())
   }, [])
 
-  const logout = useCallback(() => {
-    mockLogout()
+  useEffect(() => {
+    refresh().finally(() => setLoading(false))
+  }, [refresh])
+
+  const logout = useCallback(async () => {
+    await logOutAction()
     setUser(null)
   }, [])
 

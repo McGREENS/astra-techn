@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
-import type { MockUser } from '@/lib/mock-auth'
+import type { SafeUser } from '@/lib/auth/types'
 
 import { useAuth } from './auth-provider'
 
 /** Where each role lands after auth. */
-export function homeForRole(user: MockUser): string {
+export function homeForRole(user: SafeUser): string {
   if (user.role === 'seller') return '/dashboard'
   if (user.role === 'rider') return '/rider/pending'
   return '/admin'
@@ -31,7 +31,7 @@ export function useRequireAuth() {
  * Protect a page that requires a specific role (e.g. onboarding steps).
  * Logged-out -> /login; wrong role -> that role's home.
  */
-export function useRequireRole(role: MockUser['role']) {
+export function useRequireRole(role: SafeUser['role']) {
   const { user, loading } = useAuth()
   const router = useRouter()
   useEffect(() => {

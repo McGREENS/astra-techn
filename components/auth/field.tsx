@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-
 import { Label } from '@/components/ui/label'
 
 export function Field({
@@ -21,13 +20,15 @@ export function Field({
     <div className="grid gap-1.5">
       <div className="flex items-center justify-between">
         <Label htmlFor={htmlFor}>{label}</Label>
-        {optional && <span className="text-xs font-normal text-[#48627F]">Optional</span>}
+        {optional && (
+          <span className="text-xs text-[#8D8E91]">Optional</span>
+        )}
       </div>
       {children}
       {error ? (
-        <p className="text-xs font-medium text-red-500">{error}</p>
+        <p className="text-xs text-red-500">{error}</p>
       ) : hint ? (
-        <p className="text-xs text-[#48627F]">{hint}</p>
+        <p className="text-xs text-[#8D8E91]">{hint}</p>
       ) : null}
     </div>
   )

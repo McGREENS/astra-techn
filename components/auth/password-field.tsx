@@ -16,9 +16,9 @@ export function PasswordField({ className, ...props }: Omit<ComponentProps<'inpu
         onClick={() => setShow((s) => !s)}
         aria-label={show ? 'Hide password' : 'Show password'}
         tabIndex={-1}
-        className="absolute right-3 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-md text-[#48627F] hover:text-[#0A1F44]"
+        className="absolute right-3 top-1/2 grid size-7 -translate-y-1/2 place-items-center text-[#8D8E91] hover:text-[#0B0B0D] transition-colors"
       >
-        {show ? <EyeOff size={18} /> : <Eye size={18} />}
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
       </button>
     </div>
   )

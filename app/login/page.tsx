@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -16,7 +16,7 @@ import { PageLoader } from '@/components/auth/page-loader'
 import { PasswordField } from '@/components/auth/password-field'
 import { SubmitButton } from '@/components/auth/submit-button'
 import { Input } from '@/components/ui/input'
-import { login } from '@/lib/mock-auth'
+import { logIn } from '@/lib/auth/actions'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -43,13 +43,13 @@ export default function LoginPage() {
   const onSubmit = async (values: FormValues) => {
     setFormError(null)
     setSubmitting(true)
-    const res = await login(values.email, values.password)
+    const res = await logIn(values.email, values.password)
     setSubmitting(false)
     if (!res.ok) {
       setFormError(res.error)
       return
     }
-    refresh()
+    await refresh()
     const dest =
       res.user.role === 'seller'
         ? '/dashboard'
@@ -66,7 +66,10 @@ export default function LoginPage() {
       title="Log in"
       subtitle="One login for sellers, riders, and admins."
       footer={
-        <Link href="/forgot-password" className="font-semibold text-[#2872A8] hover:text-[#0A1F44]">
+        <Link
+          href="/forgot-password"
+          className="font-medium text-[#0B0B0D] hover:text-[#3A3D44]"
+        >
           Forgot password?
         </Link>
       }
@@ -74,11 +77,12 @@ export default function LoginPage() {
       {formError && (
         <div
           role="alert"
-          className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-700"
+          className="mb-4 flex items-center gap-2 rounded-sm border border-[#C9CACD] bg-[#F9F9FA] px-3.5 py-3 text-sm text-[#0B0B0D]"
         >
-          <AlertCircle size={16} className="shrink-0" /> {formError}
+          <AlertCircle size={15} className="shrink-0 text-[#8D8E91]" /> {formError}
         </div>
       )}
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4" noValidate>
         <Field label="Email" htmlFor="email" error={errors.email?.message}>
           <Input
@@ -100,18 +104,22 @@ export default function LoginPage() {
           />
         </Field>
         <SubmitButton loading={submitting}>
-          Log in <ArrowRight size={16} />
+          Log in <ArrowRight size={15} />
         </SubmitButton>
       </form>
 
-      <div className="mt-6 rounded-xl border border-[#CFE6FF] bg-[#F7FBFF] px-3.5 py-3 text-xs text-[#48627F]">
-        <span className="font-semibold text-[#0A1F44]">Demo admin:</span>{' '}
+      {/* Demo admin hint — brand: Chrome text, Silver border, Platinum surface */}
+      <div className="mt-6 border border-[#E9E9EA] bg-[#F9F9FA] px-4 py-3 text-xs text-[#8D8E91]">
+        <span className="font-medium text-[#0B0B0D]">Demo admin:</span>{' '}
         admin@astra.com / admin1234
       </div>
 
-      <p className="mt-4 text-center text-sm text-[#48627F]">
+      <p className="mt-4 text-center text-sm text-[#8D8E91]">
         New to Astra?{' '}
-        <Link href="/get-started" className="font-semibold text-[#2872A8] hover:text-[#0A1F44]">
+        <Link
+          href="/get-started"
+          className="font-medium text-[#0B0B0D] hover:text-[#3A3D44]"
+        >
           Get started
         </Link>
       </p>

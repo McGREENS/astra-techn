@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `logo_data_url` text;

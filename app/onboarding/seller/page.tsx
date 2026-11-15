@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -16,7 +16,8 @@ import { StepIndicator } from '@/components/auth/step-indicator'
 import { SubmitButton } from '@/components/auth/submit-button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { completeSellerOnboarding, generateUniqueSlug } from '@/lib/mock-auth'
+import { completeSellerOnboarding } from '@/lib/auth/actions'
+import { slugify } from '@/lib/slug'
 
 const CATEGORIES = [
   'Fashion & Apparel',
@@ -57,18 +58,19 @@ export default function OnboardingSellerPage() {
   })
 
   const businessName = form.watch('businessName') ?? ''
+  // Preview only — the final unique slug is generated server-side on submit.
   const slug = useMemo(
-    () => (businessName.trim() ? generateUniqueSlug(businessName, user?.id) : ''),
-    [businessName, user?.id],
+    () => (businessName.trim() ? slugify(businessName) : ''),
+    [businessName],
   )
 
   if (loading || !user || user.role !== 'seller') return <PageLoader />
 
   const onSubmit = async (values: FormValues) => {
     setSubmitting(true)
-    await completeSellerOnboarding(user.id, { ...values, slug })
+    await completeSellerOnboarding(user.id, values)
     setSubmitting(false)
-    refresh()
+    await refresh()
     router.push('/dashboard')
   }
 
@@ -92,11 +94,11 @@ export default function OnboardingSellerPage() {
         </Field>
 
         {slug && (
-          <div className="flex items-center gap-2 rounded-xl border border-[#CFE6FF] bg-[#F7FBFF] px-3.5 py-3 text-sm">
-            <Link2 size={16} className="shrink-0 text-[#2872A8]" />
-            <span className="truncate text-[#48627F]">
+          <div className="flex items-center gap-2 border border-[#E9E9EA] bg-[#F9F9FA] px-3.5 py-3 text-sm">
+            <Link2 size={15} className="shrink-0 text-[#8D8E91]" />
+            <span className="truncate text-[#8D8E91]">
               Your link:{' '}
-              <span className="font-bold text-[#0A1F44]">astra.com/s/{slug}</span>
+              <span className="font-medium text-[#0B0B0D]">astra.com/s/{slug}</span>
             </span>
           </div>
         )}

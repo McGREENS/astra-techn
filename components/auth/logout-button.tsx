@@ -21,8 +21,8 @@ export function LogoutButton({
   return (
     <button
       type="button"
-      onClick={() => {
-        logout()
+      onClick={async () => {
+        await logout()
         router.push(redirectTo)
       }}
       className={cn(

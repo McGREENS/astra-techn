@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -16,7 +16,7 @@ import { StepIndicator } from '@/components/auth/step-indicator'
 import { SubmitButton } from '@/components/auth/submit-button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { completeRiderOnboarding } from '@/lib/mock-auth'
+import { completeRiderOnboarding } from '@/lib/auth/actions'
 import { fileToResizedDataUrl } from '@/lib/image'
 
 const AREAS = [
@@ -77,7 +77,7 @@ export default function OnboardingRiderPage() {
       photoDataUrl: photo,
     })
     setSubmitting(false)
-    refresh()
+    await refresh()
     router.push('/rider/pending')
   }
 
@@ -122,32 +122,23 @@ export default function OnboardingRiderPage() {
         </Field>
 
         <div className="grid gap-1.5">
-          <span className="text-sm font-semibold text-[#0A1F44]">Profile photo</span>
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#CFE6FF] bg-[#F7FBFF] px-4 py-6 text-center transition hover:border-[#7DC4FF]">
+          <span className="text-sm font-medium text-[#0B0B0D]">Profile photo</span>
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-[#C9CACD] bg-[#F9F9FA] px-4 py-6 text-center transition hover:border-[#8D8E91]">
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photo}
-                alt="Profile preview"
-                className="size-20 rounded-full object-cover ring-2 ring-[#CFE6FF]"
-              />
+              <img src={photo} alt="Profile preview" className="size-20 object-cover ring-1 ring-[#C9CACD]" />
             ) : (
-              <span className="grid size-12 place-items-center rounded-full bg-white text-[#0A1F44] shadow-sm">
-                <Upload size={20} />
+              <span className="grid size-12 place-items-center border border-[#E9E9EA] bg-white text-[#8D8E91]">
+                <Upload size={18} />
               </span>
             )}
-            <span className="text-sm font-semibold text-[#0A1F44]">
+            <span className="text-sm font-medium text-[#0B0B0D]">
               {photo ? 'Change photo' : 'Click to upload'}
             </span>
-            <span className="text-xs text-[#48627F]">PNG or JPG. Preview only — no real upload.</span>
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={onPhotoChange}
-            />
+            <span className="text-xs text-[#8D8E91]">PNG or JPG.</span>
+            <input type="file" accept="image/*" className="sr-only" onChange={onPhotoChange} />
           </label>
-          {photoError && <p className="text-xs font-medium text-red-500">{photoError}</p>}
+          {photoError && <p className="text-xs text-red-500">{photoError}</p>}
         </div>
 
         <SubmitButton loading={submitting}>

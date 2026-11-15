@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Bike, Store } from 'lucide-react'
@@ -33,39 +33,38 @@ export default function GetStartedPage() {
       title="Get started"
       subtitle="Choose how you'll use Astra. Customers don't need an account — only sellers and riders do."
       footer={
-        <Link href="/login" className="font-semibold text-[#2872A8] hover:text-[#0A1F44]">
-          Already have an account? Log in{' '}
-          <ArrowRight size={14} className="ml-0.5 inline" />
+        <Link
+          href="/login"
+          className="font-medium text-[#0B0B0D] hover:text-[#3A3D44]"
+        >
+          Already have an account? Log in <ArrowRight size={13} className="ml-0.5 inline" />
         </Link>
       }
     >
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {CARDS.map((c) => (
           <Link
             key={c.role}
             href={c.href}
-            className="group flex items-center gap-4 rounded-2xl border border-[#CFE6FF] bg-white p-5 transition hover:-translate-y-0.5 hover:border-[#7DC4FF] hover:shadow-[0_12px_30px_rgba(10,31,68,.06)]"
+            className="group flex items-center gap-4 border border-[#E9E9EA] bg-white p-5 transition hover:border-[#8D8E91]"
           >
-            <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#E8F3FF] text-[#0A1F44]">
-              <c.icon size={22} />
+            <span className="grid size-11 shrink-0 place-items-center border border-[#E9E9EA] bg-[#F9F9FA] text-[#0B0B0D]">
+              <c.icon size={20} />
             </span>
             <span className="min-w-0">
-              <span className="block text-base font-bold text-[#0A1F44]">{c.title}</span>
-              <span className="mt-0.5 block text-sm text-[#48627F]">{c.desc}</span>
+              <span className="block text-base font-medium text-[#0B0B0D]">{c.title}</span>
+              <span className="mt-0.5 block text-sm text-[#8D8E91]">{c.desc}</span>
             </span>
-            <ArrowRight
-              size={18}
-              className="ml-auto shrink-0 text-[#7DC4FF] transition group-hover:translate-x-0.5"
-            />
+            <ArrowRight size={16} className="ml-auto shrink-0 text-[#C9CACD] transition group-hover:text-[#0B0B0D]" />
           </Link>
         ))}
       </div>
-      <div className="mt-4">
+      <div className="mt-5">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#48627F] hover:text-[#0A1F44]"
+          className="inline-flex items-center gap-1.5 text-sm text-[#8D8E91] hover:text-[#0B0B0D] transition"
         >
-          <ArrowLeft size={15} /> Back to home
+          <ArrowLeft size={14} /> Back to home
         </Link>
       </div>
     </AuthLayout>

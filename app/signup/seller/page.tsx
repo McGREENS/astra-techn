@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -17,17 +17,14 @@ import { PasswordField } from '@/components/auth/password-field'
 import { StepIndicator } from '@/components/auth/step-indicator'
 import { SubmitButton } from '@/components/auth/submit-button'
 import { Input } from '@/components/ui/input'
-import { emailExists, signup } from '@/lib/mock-auth'
+import { signUp } from '@/lib/auth/actions'
 
 const phoneRegex = /^[+]?[\d\s().-]{7,}$/
 
 const schema = z
   .object({
     fullName: z.string().min(2, 'Enter your full name'),
-    email: z
-      .string()
-      .email('Enter a valid email')
-      .refine((v) => !emailExists(v), 'This email is already registered'),
+    email: z.string().email('Enter a valid email'),
     phone: z
       .string()
       .min(7, 'Enter a valid phone number')
@@ -58,7 +55,7 @@ export default function SignupSellerPage() {
 
   const onSubmit = async (values: FormValues) => {
     setSubmitting(true)
-    const res = await signup({
+    const res = await signUp({
       name: values.fullName,
       email: values.email,
       phone: values.phone,
@@ -70,7 +67,7 @@ export default function SignupSellerPage() {
       form.setError('email', { message: res.error })
       return
     }
-    refresh()
+    await refresh()
     router.push('/onboarding/seller')
   }
 
@@ -84,7 +81,7 @@ export default function SignupSellerPage() {
       footer={
         <>
           Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-[#2872A8] hover:text-[#0A1F44]">
+          <Link href="/login" className="font-medium text-[#0B0B0D] hover:text-[#3A3D44]">
             Log in
           </Link>
         </>
