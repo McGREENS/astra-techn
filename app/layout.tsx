@@ -21,7 +21,13 @@ export const metadata: Metadata = {
     description: 'The delivery layer for the social commerce era.',
     type: 'website',
   },
-  icons: { icon: '/icon.svg', apple: '/apple-icon.png' },
+  icons: {
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192x192.png',  sizes: '192x192', type: 'image/png' },
+    ],
+    apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+  },
 }
 
 export const viewport: Viewport = {
