@@ -29,6 +29,27 @@
       "when": 1794509202188,
       "tag": "0003_add_logo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795273468814,
+      "tag": "0004_products",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795307421788,
+      "tag": "0005_contact_enquiries",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795311031734,
+      "tag": "0006_delivery_company",
+      "breakpoints": true
     }
   ]
 }

@@ -1,107 +1,113 @@
 ﻿'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import { AppShell } from '@/components/auth/app-shell'
 import { useRequireAdmin } from '@/components/auth/guards'
 import { PageLoader } from '@/components/auth/page-loader'
-import { getRiders, setRiderStatus } from '@/lib/auth/actions'
-import type { RiderStatus, SafeUser } from '@/lib/auth/types'
+import { AdminShell } from '@/components/admin/admin-shell'
+import { BarChart } from '@/components/admin/bar-chart'
+import { getPlatformStats, getOrdersPerDay } from '@/lib/admin/actions'
+import type { PlatformStats, DailyCount } from '@/lib/admin/actions'
 import { cn } from '@/lib/utils'
 
-function StatusBadge({ status }: { status: RiderStatus }) {
-  const map: Record<RiderStatus, string> = {
-    pending:   'border-[#C9CACD] bg-[#F9F9FA] text-[#3A3D44]',
-    approved:  'border-[#3A3D44] bg-[#0B0B0D] text-[#E9E9EA]',
-    suspended: 'border-red-200 bg-red-50 text-red-700',
-  }
+function fmt(cents: number) {
+  return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+}
+
+function shortDay(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2)
+}
+
+function StatTile({ label, value, sub, accent }: {
+  label: string; value: string | number; sub?: string; accent?: boolean
+}) {
   return (
-    <span className={cn('inline-flex items-center border px-2.5 py-1 text-xs font-medium capitalize', map[status])}>
-      {status}
-    </span>
+    <div className="border border-[#E9E9EA] bg-white p-5">
+      <p className="text-xs font-medium uppercase tracking-widest text-[#8D8E91]">{label}</p>
+      <p className={cn('mt-2 text-3xl font-light tracking-tight',
+        accent ? 'text-[#3A3D44]' : 'text-[#0B0B0D]')}>
+        {value}
+      </p>
+      {sub && <p className="mt-1 text-xs text-[#C9CACD]">{sub}</p>}
+    </div>
   )
 }
 
-export default function AdminPage() {
+export default function AdminOverviewPage() {
   const { user, loading } = useRequireAdmin()
-  const [riders, setRiders] = useState<SafeUser[]>([])
+  const [stats,   setStats]   = useState<PlatformStats | null>(null)
+  const [chart,   setChart]   = useState<DailyCount[]>([])
+  const [fetching, setFetching] = useState(true)
 
-  useEffect(() => {
-    if (user) getRiders().then(setRiders)
-  }, [user])
+  const load = useCallback(async () => {
+    setFetching(true)
+    const [s, c] = await Promise.all([getPlatformStats(), getOrdersPerDay(7)])
+    setStats(s); setChart(c)
+    setFetching(false)
+  }, [])
+
+  useEffect(() => { if (user) load() }, [user, load])
 
   if (loading || !user || user.role !== 'admin') return <PageLoader />
 
-  const update = async (id: string, status: RiderStatus) => {
-    setRiders(await setRiderStatus(id, status))
-  }
-  const pendingCount = riders.filter((r) => r.riderStatus === 'pending').length
+  const chartData = chart.map(d => ({ label: shortDay(d.date), value: d.count }))
 
   return (
-    <AppShell user={user} title="Admin">
-      <div className="mb-4 flex items-center gap-3">
-        <h2 className="text-base font-medium text-[#0B0B0D]">Riders</h2>
-        <span className="border border-[#E9E9EA] bg-[#F9F9FA] px-2.5 py-1 text-xs font-medium text-[#8D8E91]">
-          {pendingCount} pending
-        </span>
+    <AdminShell user={user}>
+      <div className="mb-6">
+        <h1 className="text-2xl font-light tracking-tight text-[#0B0B0D]">Overview</h1>
+        <p className="mt-0.5 text-sm text-[#8D8E91]">Platform performance at a glance.</p>
       </div>
 
-      <div className="overflow-hidden border border-[#E9E9EA] bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-sm">
-            <thead>
-              <tr className="border-b border-[#E9E9EA] text-left text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
-                <th className="px-4 py-3">Rider</th>
-                <th className="px-4 py-3">Area</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E9E9EA]">
-              {riders.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-sm text-[#8D8E91]">
-                    No riders yet.
-                  </td>
-                </tr>
-              )}
-              {riders.map((r) => (
-                <tr key={r.id} className="align-middle">
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-[#0B0B0D]">{r.name}</div>
-                    <div className="text-xs text-[#8D8E91]">{r.email}</div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-[#8D8E91]">{r.area ?? '—'}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={r.riderStatus ?? 'pending'} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        disabled={r.riderStatus === 'approved'}
-                        onClick={() => update(r.id, 'approved')}
-                        className="border border-[#E9E9EA] px-3 py-1.5 text-xs font-medium text-[#0B0B0D] transition hover:bg-[#0B0B0D] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        disabled={r.riderStatus === 'suspended'}
-                        onClick={() => update(r.id, 'suspended')}
-                        className="border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        Suspend
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {fetching || !stats ? (
+        <div className="flex items-center gap-3 border border-[#E9E9EA] bg-white px-6 py-10 text-sm text-[#8D8E91]">
+          <span className="size-4 animate-spin rounded-full border-2 border-[#E9E9EA] border-t-[#0B0B0D]" />
+          Loading…
         </div>
-      </div>
-      <p className="mt-4 text-xs text-[#8D8E91]">
-        Approve and Suspend update the rider&rsquo;s status in the database.
-      </p>
-    </AppShell>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {/* Revenue */}
+          <div className="border border-[#E9E9EA] bg-[#0B0B0D] px-6 py-6">
+            <p className="text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
+              Total platform revenue
+            </p>
+            <p className="mt-2 text-4xl font-light text-white">{fmt(stats.revenue)}</p>
+            <p className="mt-1 text-xs text-[#3A3D44]">From delivered orders</p>
+          </div>
+
+          {/* Order stats */}
+          <div className="grid gap-px bg-[#E9E9EA] sm:grid-cols-2 lg:grid-cols-4">
+            <StatTile label="Total orders"    value={stats.orders.total}     />
+            <StatTile label="Delivered"       value={stats.orders.delivered} accent />
+            <StatTile label="Active"          value={stats.orders.active}    />
+            <StatTile label="Pending"         value={stats.orders.pending}   />
+          </div>
+
+          {/* Chart */}
+          <div className="border border-[#E9E9EA] bg-white">
+            <div className="border-b border-[#E9E9EA] px-5 py-4">
+              <p className="font-medium text-[#0B0B0D]">Orders — last 7 days</p>
+            </div>
+            <div className="px-5 py-5">
+              {chartData.every(d => d.value === 0)
+                ? <p className="py-8 text-center text-sm text-[#C9CACD]">No orders yet</p>
+                : <BarChart data={chartData} height={120} color="#0B0B0D" />
+              }
+            </div>
+          </div>
+
+          {/* User stats */}
+          <div className="grid gap-px bg-[#E9E9EA] sm:grid-cols-3">
+            <StatTile label="Sellers"
+              value={stats.users.sellers} sub="Registered stores" />
+            <StatTile label="Active riders"
+              value={stats.users.ridersApproved}
+              sub={`${stats.users.ridersPending} pending approval`} />
+            <StatTile label="Suspended riders"
+              value={stats.users.ridersSuspended} sub="Removed from platform" />
+          </div>
+        </div>
+      )}
+    </AdminShell>
   )
 }

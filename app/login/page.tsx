@@ -111,7 +111,7 @@ export default function LoginPage() {
       {/* Demo admin hint — brand: Chrome text, Silver border, Platinum surface */}
       <div className="mt-6 border border-[#E9E9EA] bg-[#F9F9FA] px-4 py-3 text-xs text-[#8D8E91]">
         <span className="font-medium text-[#0B0B0D]">Demo admin:</span>{' '}
-        admin@astra.com / admin1234
+        admin@astra.africa / admin1234
       </div>
 
       <p className="mt-4 text-center text-sm text-[#8D8E91]">

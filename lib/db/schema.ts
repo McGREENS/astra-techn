@@ -16,7 +16,7 @@ export const users = sqliteTable("users", {
     // Generated in JS (Node's built-in crypto) at insert time.
     .$defaultFn(() => crypto.randomUUID()),
 
-  role: text("role", { enum: ["seller", "rider", "admin"] }).notNull(),
+  role: text("role", { enum: ["seller", "rider", "admin", "delivery_company"] }).notNull(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   phone: text("phone"),
@@ -47,6 +47,9 @@ export const users = sqliteTable("users", {
   riderStatus: text("rider_status", {
     enum: ["pending", "approved", "suspended"],
   }),
+
+  // --- delivery company link (riders belong to a company) ---
+  companyId: text("company_id"), // references users.id where role = 'delivery_company'
 });
 
 // Convenience type for the row shape used across the app.
@@ -145,3 +148,57 @@ export const passwordResetTokens = sqliteTable('password_reset_tokens', {
 })
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect
+
+/* ------------------------------------------------------------------ */
+/* Contact enquiries (delivery company / partner applications)        */
+/* ------------------------------------------------------------------ */
+
+export const contactEnquiries = sqliteTable('contact_enquiries', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+
+  name:         text('name').notNull(),
+  contact:      text('contact').notNull(),   // email or phone
+  companyName:  text('company_name').notNull(),
+  message:      text('message'),
+
+  status: text('status', {
+    enum: ['new', 'contacted', 'dismissed'],
+  }).notNull().default('new'),
+
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+})
+
+export type ContactEnquiry    = typeof contactEnquiries.$inferSelect
+export type NewContactEnquiry = typeof contactEnquiries.$inferInsert
+
+/* ------------------------------------------------------------------ */
+/* Products (seller catalogue)                                         */
+/* ------------------------------------------------------------------ */
+
+export const products = sqliteTable('products', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+
+  sellerId: text('seller_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+
+  name:        text('name').notNull(),
+  description: text('description'),
+  price:       integer('price').notNull().default(0), // cents
+  imageDataUrl: text('image_data_url'),
+  available:   integer('available', { mode: 'boolean' }).notNull().default(true),
+  position:    integer('position').notNull().default(0),
+
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+})
+
+export type Product    = typeof products.$inferSelect
+export type NewProduct = typeof products.$inferInsert

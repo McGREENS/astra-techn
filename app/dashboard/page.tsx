@@ -1,7 +1,7 @@
-﻿'use client'
+'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Copy, ExternalLink, LayoutDashboard, Link2, Plus, Settings } from 'lucide-react'
+import { Copy, ExternalLink, LayoutDashboard, Package, Link2, Plus, Settings } from 'lucide-react'
 
 import { useRequireRole } from '@/components/auth/guards'
 import { PageLoader } from '@/components/auth/page-loader'
@@ -11,10 +11,12 @@ import { OrdersTable } from '@/components/dashboard/orders-table'
 import { NewOrderForm } from '@/components/dashboard/new-order-form'
 import { getSellerOrders, getSellerStats } from '@/lib/orders/actions'
 import type { OrderWithItems, OrderStats } from '@/lib/orders/actions'
+import { siteUrl, displayUrl } from '@/lib/site-url'
 import type { NavItem } from '@/components/dashboard/sidebar'
 
 const SELLER_NAV: NavItem[] = [
   { label: 'Dashboard',  href: '/dashboard',          icon: LayoutDashboard, exact: true },
+  { label: 'Products',   href: '/dashboard/products', icon: Package },
   { label: 'Order link', href: '/dashboard/link',     icon: Link2 },
   { label: 'Settings',   href: '/dashboard/settings', icon: Settings },
 ]
@@ -39,11 +41,12 @@ export default function DashboardPage() {
 
   if (loading || !user || user.role !== 'seller') return <PageLoader />
 
-  const orderLink = user.slug ? `astra.com/s/${user.slug}` : null
+  const orderLink    = user.slug ? displayUrl(`/s/${user.slug}`) : null
+  const orderFullUrl = user.slug ? siteUrl(`/s/${user.slug}`) : null
 
   const copyLink = () => {
-    if (!orderLink) return
-    navigator.clipboard.writeText(`https://${orderLink}`)
+    if (!orderFullUrl) return
+    navigator.clipboard.writeText(orderFullUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -73,7 +76,7 @@ export default function DashboardPage() {
               className="inline-flex items-center gap-2 border border-[#E9E9EA] px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-[#0B0B0D] hover:bg-[#F9F9FA] transition">
               <Copy size={13} /> {copied ? 'Copied' : 'Copy'}
             </button>
-            <a href={`https://${orderLink}`} target="_blank" rel="noopener noreferrer"
+            <a href={orderFullUrl ?? '#'} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-[#E9E9EA] px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-[#0B0B0D] hover:bg-[#F9F9FA] transition">
               <ExternalLink size={13} /> Open
             </a>
@@ -83,10 +86,10 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="mb-6 grid gap-px bg-[#E9E9EA] sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total orders"      value={stats?.total     ?? '—'} />
-        <StatCard label="Pending"           value={stats?.pending   ?? '—'} accent />
-        <StatCard label="Active deliveries" value={stats?.active    ?? '—'} />
-        <StatCard label="Delivered"         value={stats?.delivered ?? '—'} />
+        <StatCard label="Total orders"      value={stats?.total     ?? '�'} />
+        <StatCard label="Pending"           value={stats?.pending   ?? '�'} accent />
+        <StatCard label="Active deliveries" value={stats?.active    ?? '�'} />
+        <StatCard label="Delivered"         value={stats?.delivered ?? '�'} />
       </div>
 
       {/* Orders */}
@@ -100,7 +103,7 @@ export default function DashboardPage() {
 
       {fetching ? (
         <div className="border border-[#E9E9EA] bg-white p-10 text-center text-sm text-[#8D8E91]">
-          Loading orders…
+          Loading orders�
         </div>
       ) : (
         <OrdersTable orders={orders} onOrderCancelled={handleOrderCancelled} />
@@ -131,7 +134,7 @@ export default function DashboardPage() {
             <div>
               <p className="text-xs font-medium uppercase tracking-widest text-[#C9CACD]">Social</p>
               <p className="mt-0.5 font-medium text-[#0B0B0D]">
-                {[user.instagram, user.tiktok].filter(Boolean).join(' · ')}
+                {[user.instagram, user.tiktok].filter(Boolean).join(' � ')}
               </p>
             </div>
           )}
@@ -148,3 +151,4 @@ export default function DashboardPage() {
     </DashboardShell>
   )
 }
+

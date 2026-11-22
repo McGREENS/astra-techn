@@ -1,6 +1,6 @@
 // Central mailer — all outbound email goes through here.
 // Called only from server-side code (server actions, route handlers).
-import { transporter } from './transport'
+import { getTransporter } from './transport'
 import {
   welcomeSellerHtml,
   welcomeSellerText,
@@ -33,7 +33,7 @@ async function sendEmail({
   text: string
 }): Promise<void> {
   try {
-    const info = await transporter.sendMail({ from: FROM, to, subject, html, text })
+    const info = await getTransporter().sendMail({ from: FROM, to, subject, html, text })
     console.log(`[email] sent to ${to} — messageId: ${info.messageId}`)
   } catch (err) {
     // Surface as a warning so signup still succeeds even if SMTP is unreachable.

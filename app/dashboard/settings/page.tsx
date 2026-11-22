@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -8,7 +8,7 @@ import {
   Camera,
   CheckCircle2,
   ExternalLink,
-  LayoutDashboard,
+  LayoutDashboard, Package,
   Link2,
   MapPin,
   Settings,
@@ -26,6 +26,7 @@ import { SubmitButton } from '@/components/auth/submit-button'
 import { updateSellerSettings } from '@/lib/seller/actions'
 import { useAuth } from '@/components/auth/auth-provider'
 import { fileToResizedDataUrl } from '@/lib/image'
+import { displayUrl as displayUrlFn } from '@/lib/site-url'
 import type { NavItem } from '@/components/dashboard/sidebar'
 
 /* ------------------------------------------------------------------ */
@@ -52,12 +53,13 @@ type FormValues = z.infer<typeof schema>
 
 const SELLER_NAV: NavItem[] = [
   { label: 'Dashboard',  href: '/dashboard',          icon: LayoutDashboard, exact: true },
+  { label: 'Products',   href: '/dashboard/products', icon: Package },
   { label: 'Order link', href: '/dashboard/link',     icon: Link2 },
   { label: 'Settings',   href: '/dashboard/settings', icon: Settings },
 ]
 
 /* ------------------------------------------------------------------ */
-/* Store preview card — shown on the right column                     */
+/* Store preview card � shown on the right column                     */
 /* ------------------------------------------------------------------ */
 
 function StorePreviewCard({
@@ -138,7 +140,7 @@ function StorePreviewCard({
           </p>
           <div className="flex items-center justify-between gap-2">
             <p className="truncate text-sm font-semibold text-[#0B0B0D]">
-              astra.com/s/{slug}
+              {displayUrlFn(`/s/${slug}`)}
             </p>
             <a
               href={`/s/${slug}`}
@@ -266,8 +268,13 @@ export default function SettingsPage() {
     },
   })
 
+  // Track whether we've done the initial hydration from the DB
+  const initialisedRef = useRef(false)
+
   useEffect(() => {
     if (!user) return
+
+    // Always sync the form fields when user data changes (e.g. after save + refresh)
     form.reset({
       businessName:  user.businessName  ?? '',
       category:      user.category      ?? '',
@@ -275,8 +282,14 @@ export default function SettingsPage() {
       instagram:     user.instagram     ?? '',
       tiktok:        user.tiktok        ?? '',
     })
-    setLogo(user.logoDataUrl ?? null)
-  }, [user, form])
+
+    // Sync logo from DB on first load AND after every successful save
+    // (initialisedRef gates the very first mount; onSubmit resets it on save)
+    if (!initialisedRef.current) {
+      setLogo(user.logoDataUrl ?? null)
+      initialisedRef.current = true
+    }
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading || !user || user.role !== 'seller') return <PageLoader />
 
@@ -305,9 +318,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Two-column layout */}
+      <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
 
-        {/* ── LEFT: form ── */}
+        {/* -- LEFT: form -- */}
         <div className="flex flex-col gap-5">
 
           {/* Alerts */}
@@ -412,10 +426,10 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <SubmitButton loading={isSubmitting}>Save changes</SubmitButton>
+          {/* Save button is below the grid so it spans both columns */}
         </div>
 
-        {/* ── RIGHT: logo + preview ── */}
+        {/* -- RIGHT: logo + preview -- */}
         <div className="flex flex-col gap-5">
 
           {/* Logo card */}
@@ -443,6 +457,13 @@ export default function SettingsPage() {
           />
         </div>
       </div>
+
+      {/* Full-width save button � saves everything including the logo */}
+      <div className="mt-6">
+        <SubmitButton loading={isSubmitting}>Save changes</SubmitButton>
+      </div>
+      </form>
     </DashboardShell>
   )
 }
+

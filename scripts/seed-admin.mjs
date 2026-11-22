@@ -1,4 +1,4 @@
-// Seeds the built-in demo admin (admin@astra.com / admin1234) into Turso and
+// Seeds the built-in demo admin (admin@astra.africa / admin1234) into Turso and
 // self-tests a throwaway signup. Idempotent: safe to re-run.
 // Uses the pure-JS web client + bcryptjs so it works without the VC++ Runtime.
 import { createClient } from '@libsql/client/web'
@@ -13,7 +13,7 @@ const client = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 })
 
-const ADMIN_EMAIL = 'admin@astra.com'
+const ADMIN_EMAIL = 'admin@astra.africa'
 const ADMIN_PASSWORD = 'admin1234'
 
 // 1) Connection test

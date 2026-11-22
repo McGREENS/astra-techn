@@ -1,8 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
-import { Check, Copy, Download, ExternalLink, LayoutDashboard, Link2, MessageCircle, Settings, Share2 } from 'lucide-react'
+import { Check, Copy, Download, ExternalLink, LayoutDashboard, Package, Link2, MessageCircle, Settings, Share2 } from 'lucide-react'
+import { siteUrl, displayUrl as displayUrlFn } from '@/lib/site-url'
 
 import { useRequireRole } from '@/components/auth/guards'
 import { PageLoader } from '@/components/auth/page-loader'
@@ -11,6 +12,7 @@ import type { NavItem } from '@/components/dashboard/sidebar'
 
 const SELLER_NAV: NavItem[] = [
   { label: 'Dashboard',  href: '/dashboard',          icon: LayoutDashboard, exact: true },
+  { label: 'Products',   href: '/dashboard/products', icon: Package },
   { label: 'Order link', href: '/dashboard/link',     icon: Link2 },
   { label: 'Settings',   href: '/dashboard/settings', icon: Settings },
 ]
@@ -61,8 +63,8 @@ export default function OrderLinkPage() {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const fullUrl    = user?.slug ? `https://astra.com/s/${user.slug}` : ''
-  const displayUrl = user?.slug ? `astra.com/s/${user.slug}` : ''
+  const fullUrl    = user?.slug ? siteUrl(`/s/${user.slug}`) : ''
+  const displayUrl = user?.slug ? displayUrlFn(`/s/${user.slug}`) : ''
 
   const { copied: copiedLink, copy: copyLink } = useCopy(fullUrl)
   const { copied: copiedSlug, copy: copySlug } = useCopy(user?.slug ?? '')
@@ -123,7 +125,7 @@ export default function OrderLinkPage() {
       <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
         <div className="flex flex-col gap-5">
 
-          <Card title="Your order link" desc="Send this to customers — they fill in their details and you get the order.">
+          <Card title="Your order link" desc="Send this to customers � they fill in their details and you get the order.">
             <div className="px-6 py-5 flex flex-col gap-4">
               <UrlRow url={displayUrl} copied={copiedLink} onCopy={copyLink} primary />
               <div className="flex flex-wrap gap-2">
@@ -143,11 +145,11 @@ export default function OrderLinkPage() {
             </div>
           </Card>
 
-          <Card title="Instagram & TikTok bio" desc="Instagram and TikTok don't allow links in captions — put it in your bio.">
+          <Card title="Instagram & TikTok bio" desc="Instagram and TikTok don't allow links in captions � put it in your bio.">
             <div className="px-6 py-5 flex flex-col gap-3">
               <UrlRow url={displayUrl} copied={copiedLink} onCopy={copyLink} />
               <p className="text-xs text-[#8D8E91] leading-relaxed">
-                1. Copy the link.&ensp;2. Open your profile.&ensp;3. Tap <strong className="text-[#0B0B0D]">Edit profile</strong> → paste in <strong className="text-[#0B0B0D]">Link in bio</strong>.
+                1. Copy the link.&ensp;2. Open your profile.&ensp;3. Tap <strong className="text-[#0B0B0D]">Edit profile</strong> ? paste in <strong className="text-[#0B0B0D]">Link in bio</strong>.
               </p>
             </div>
           </Card>
@@ -167,21 +169,21 @@ export default function OrderLinkPage() {
                 <img src={qrDataUrl} alt="QR code" className="w-full max-w-[200px] border border-[#E9E9EA] p-2" />
               ) : (
                 <div className="flex h-[200px] w-full max-w-[200px] items-center justify-center border border-[#E9E9EA] bg-[#F9F9FA]">
-                  <p className="text-xs text-[#C9CACD]">Generating…</p>
+                  <p className="text-xs text-[#C9CACD]">Generating�</p>
                 </div>
               )}
               <button onClick={downloadQr} disabled={!qrDataUrl}
                 className="inline-flex w-full items-center justify-center gap-2 border border-[#0B0B0D] bg-[#0B0B0D] px-4 py-2.5 text-xs font-medium uppercase tracking-widest text-white hover:bg-[#3A3D44] disabled:opacity-50 transition">
                 <Download size={14} /> Download PNG
               </button>
-              <p className="text-center text-xs text-[#C9CACD]">High-resolution — safe to print large.</p>
+              <p className="text-center text-xs text-[#C9CACD]">High-resolution � safe to print large.</p>
             </div>
           </Card>
 
           <div className="border border-[#E9E9EA] bg-[#F9F9FA] px-5 py-4">
             <p className="text-xs font-medium uppercase tracking-widest text-[#C9CACD]">Pro tip</p>
             <p className="mt-1.5 text-sm text-[#8D8E91] leading-relaxed">
-              Print the QR code and stick it on your packaging or receipts — customers can reorder in seconds.
+              Print the QR code and stick it on your packaging or receipts � customers can reorder in seconds.
             </p>
           </div>
         </div>
@@ -191,3 +193,4 @@ export default function OrderLinkPage() {
     </DashboardShell>
   )
 }
+

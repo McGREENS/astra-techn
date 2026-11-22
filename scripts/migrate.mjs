@@ -22,8 +22,8 @@ for (const f of files) {
       await client.execute(stmt)
       console.log(`OK  ${f} :: ${stmt.split('\n')[0].slice(0, 72)}`)
     } catch (e) {
-      if (e.message?.includes('already exists')) {
-        console.log(`SKP ${f} :: already exists`)
+      if (e.message?.includes('already exists') || e.message?.includes('duplicate column')) {
+        console.log(`SKP ${f} :: already exists / duplicate column`)
       } else {
         console.error(`ERR ${f} :: ${e.message}`)
         process.exit(1)

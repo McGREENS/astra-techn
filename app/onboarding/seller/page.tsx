@@ -98,7 +98,7 @@ export default function OnboardingSellerPage() {
             <Link2 size={15} className="shrink-0 text-[#8D8E91]" />
             <span className="truncate text-[#8D8E91]">
               Your link:{' '}
-              <span className="font-medium text-[#0B0B0D]">astra.com/s/{slug}</span>
+              <span className="font-medium text-[#0B0B0D]">astra.africa/s/{slug}</span>
             </span>
           </div>
         )}

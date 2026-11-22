@@ -187,7 +187,9 @@ export async function requestPasswordReset(
 
     const baseUrl  = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
     const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`
-    sendPasswordReset({ name: user.name, email: user.email, resetUrl })
+    // Must await — in a serverless environment the function is killed after the
+    // response is sent, so a fire-and-forget promise would never complete.
+    await sendPasswordReset({ name: user.name, email: user.email, resetUrl })
   }
 
   return { ok: true }

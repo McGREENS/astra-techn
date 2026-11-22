@@ -9,7 +9,7 @@ latency so loading states are realistic.
 
 | Role   | Email             | Password    | Lands on            |
 | ------ | ----------------- | ----------- | ------------------- |
-| Admin  | admin@astra.com   | admin1234   | `/admin`            |
+| Admin  | admin@astra.africa   | admin1234   | `/admin`            |
 | Seller | (any you create)  | (you set)   | `/dashboard`        |
 | Rider  | (any you create)  | (you set)   | `/rider/pending`    |
 
@@ -25,7 +25,7 @@ admin table on first run.
 - **Forgot password:** `/forgot-password` shows a confirmation screen (no real reset).
 
 The seller onboarding step generates a slug from the business name and shows a live
-`astra.com/s/<slug>` preview, with collision handling (`store-name`, `store-name-2`, …).
+`astra.africa/s/<slug>` preview, with collision handling (`store-name`, `store-name-2`, …).
 
 ## Navigation guards (client-side, demo only)
 

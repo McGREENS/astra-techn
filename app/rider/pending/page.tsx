@@ -63,8 +63,8 @@ export default function RiderPendingPage() {
           {status === 'suspended' ? (
             <p className="text-sm text-[#8D8E91]">
               Please contact{' '}
-              <a href="mailto:support@astra.com" className="font-medium text-[#0B0B0D]">
-                support@astra.com
+              <a href="mailto:support@astra.africa" className="font-medium text-[#0B0B0D]">
+                support@astra.africa
               </a>{' '}
               for more information.
             </p>

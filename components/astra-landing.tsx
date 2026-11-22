@@ -1,12 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   ArrowRight, Bike, Check, ChevronDown, Clock3, Link2,
   MapPin, Menu, MessageCircle, PackageCheck, QrCode,
   ShieldCheck, Truck, UserRound, X, Zap,
 } from 'lucide-react'
+import { submitContactForm } from '@/lib/contact/actions'
 
 /* ------------------------------------------------------------------ */
 /* Brand colours                                                       */
@@ -14,10 +15,12 @@ import {
 // Obsidian #0B0B0D · Graphite #3A3D44 · Chrome #8D8E91
 // Silver #C9CACD · Platinum #E9E9EA · Flare #CFD9F6
 
-function Logo({ light = false }: { light?: boolean }) {
-  const src = light
-    ? '/Astra-Logo/SVG/astra-logo-white-no-tagline.svg'
-    : '/Astra-Logo/SVG/astra-logo-black-no-tagline.svg'
+function Logo({ light = false, silver = false }: { light?: boolean; silver?: boolean }) {
+  const src = silver
+    ? '/Astra-Logo/SVG/astra-logo-silver-no-tagline.svg'
+    : light
+      ? '/Astra-Logo/SVG/astra-logo-white-no-tagline.svg'
+      : '/Astra-Logo/SVG/astra-logo-black-no-tagline.svg'
   return (
     <a href="#top" className="inline-flex shrink-0 items-center" aria-label="Astra Technologies">
       <Image
@@ -155,18 +158,113 @@ function PhoneMockup() {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/* Contact form for delivery company enquiries                        */
+/* ------------------------------------------------------------------ */
+
+function ContactForm() {
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setStatus('submitting')
+    const data = new FormData(e.currentTarget)
+    const res = await submitContactForm({
+      name:        String(data.get('name') ?? ''),
+      contact:     String(data.get('contact') ?? ''),
+      companyName: String(data.get('companyName') ?? ''),
+      message:     String(data.get('message') ?? ''),
+    })
+    if (res.ok) {
+      setStatus('done')
+    } else {
+      setErrorMsg(res.error)
+      setStatus('error')
+    }
+  }
+
+  if (status === 'done') {
+    return (
+      <div className="flex min-h-56 flex-col items-center justify-center border border-[#3A3D44] p-7 text-center">
+        <div className="mb-4 grid size-12 place-items-center border border-[#3A3D44] text-[#C9CACD]">
+          <Check size={20} />
+        </div>
+        <h3 className="text-xl font-light text-white">Enquiry received.</h3>
+        <p className="mt-2 text-sm text-[#8D8E91]">
+          Our team will review your application and be in touch shortly.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="border border-[#3A3D44] p-5 sm:p-7">
+      {status === 'error' && (
+        <p className="mb-4 border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+          {errorMsg}
+        </p>
+      )}
+      <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
+            Your name <span className="text-red-500">*</span>
+            <input
+              name="name"
+              required
+              autoComplete="name"
+              placeholder="Jon Brewster"
+              className="border border-[#3A3D44] bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#3A3D44] focus:border-[#C9CACD]"
+            />
+          </label>
+          <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
+            Phone or email <span className="text-red-500">*</span>
+            <input
+              name="contact"
+              required
+              autoComplete="email"
+              placeholder="you@company.com"
+              className="border border-[#3A3D44] bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#3A3D44] focus:border-[#C9CACD]"
+            />
+          </label>
+        </div>
+        <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
+          Company name <span className="text-red-500">*</span>
+          <input
+            name="companyName"
+            required
+            autoComplete="organization"
+            placeholder="Swift Logistics Ltd."
+            className="border border-[#3A3D44] bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#3A3D44] focus:border-[#C9CACD]"
+          />
+        </label>
+        <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
+          Message <span className="text-[#3A3D44] font-normal normal-case tracking-normal">— optional</span>
+          <textarea
+            name="message"
+            rows={3}
+            placeholder="Fleet size, operating area, anything else we should know…"
+            className="resize-none border border-[#3A3D44] bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#3A3D44] focus:border-[#C9CACD]"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={status === 'submitting'}
+          className="mt-1 flex items-center justify-center gap-2 border border-[#C9CACD] bg-white py-3.5 text-xs font-medium uppercase tracking-widest text-[#0B0B0D] transition hover:bg-[#E9E9EA] disabled:opacity-60"
+        >
+          {status === 'submitting' ? 'Sending…' : <>Submit enquiry <ArrowRight size={13} /></>}
+        </button>
+        <p className="text-center text-[11px] text-[#3A3D44]">
+          We respond to all enquiries within 48 hours.
+        </p>
+      </div>
+    </form>
+  )
+}
+
 export default function AstraLanding() {
   const [menu, setMenu]       = useState(false)
-  const [submitted, setSubmit]= useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const faqs: [string, string][] = [
     ['Do I need to code?', 'No. Astra gives you a ready-to-share order link. Add your items, share the link, and start accepting delivery orders.'],
@@ -180,23 +278,17 @@ export default function AstraLanding() {
     <main id="top" className="overflow-hidden bg-white text-[#0B0B0D]">
 
       {/* ── Nav ── */}
-      <header
-        className={`fixed inset-x-0 top-0 z-20 transition-[background-color,box-shadow,border-color] duration-300 ${
-          scrolled
-            ? 'border-b border-[#E9E9EA] bg-white/90 backdrop-blur-md shadow-[0_1px_12px_rgba(11,11,13,.06)]'
-            : 'border-b border-transparent bg-transparent'
-        }`}
-      >
+      <header className="fixed inset-x-0 top-0 z-20 border-b border-[#3A3D44] bg-[#0B0B0D]">
         <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-5 lg:px-16">
-          <Logo />
+          <Logo silver />
           <div className="hidden items-center gap-8 text-xs font-medium uppercase tracking-widest text-[#8D8E91] md:flex">
-            <a className="transition hover:text-[#0B0B0D]" href="#how">How it works</a>
-            <a className="transition hover:text-[#0B0B0D]" href="#features">Features</a>
-            <a className="transition hover:text-[#0B0B0D]" href="#sides">For riders</a>
-            <a className="transition hover:text-[#0B0B0D]" href="#faq">FAQ</a>
+            <a className="transition hover:text-[#C9CACD]" href="#how">How it works</a>
+            <a className="transition hover:text-[#C9CACD]" href="#features">Features</a>
+            <a className="transition hover:text-[#C9CACD]" href="#sides">For riders</a>
+            <a className="transition hover:text-[#C9CACD]" href="#faq">FAQ</a>
           </div>
-          <div className="hidden md:block"><Btn>Get your order link <ArrowRight size={13} /></Btn></div>
-          <button aria-label="Toggle menu" onClick={() => setMenu(!menu)} className="rounded-sm p-2 text-[#0B0B0D] md:hidden">
+          <div className="hidden md:block"><Btn outline>Get your order link <ArrowRight size={13} /></Btn></div>
+          <button aria-label="Toggle menu" onClick={() => setMenu(!menu)} className="rounded-sm p-2 text-[#C9CACD] md:hidden">
             {menu ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
@@ -460,50 +552,19 @@ export default function AstraLanding() {
       <section id="waitlist" className="bg-[#0B0B0D] py-20 text-white lg:py-24">
         <div className="mx-auto grid max-w-[1200px] items-center gap-10 px-5 lg:grid-cols-[.9fr_1.1fr] lg:px-16">
           <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-[.2em] text-[#8D8E91]">Be first in line</p>
-            <h2 className="text-4xl font-light tracking-[-0.04em] sm:text-5xl">Ready to deliver smarter?</h2>
+            <p className="mb-3 text-xs font-medium uppercase tracking-[.2em] text-[#8D8E91]">Partner with us</p>
+            <h2 className="text-4xl font-light tracking-[-0.04em] sm:text-5xl">Are you a delivery company?</h2>
             <p className="mt-4 max-w-md text-sm leading-7 text-[#8D8E91]">
-              Join the waitlist and we&apos;ll let you know when Astra is ready for your business.
+              We&apos;re partnering with delivery companies to power last-mile logistics for social sellers.
+              Fill in your details and our team will be in touch.
             </p>
-            {/* Brand tagline trio */}
             <div className="mt-8 flex gap-4 text-xs font-medium uppercase tracking-widest text-[#3A3D44]">
               <span>Innovate</span><span>·</span><span>Connect</span><span>·</span><span>Grow</span>
             </div>
           </div>
 
-          {/* Form */}
-          <div className="rounded-sm border border-[#3A3D44] p-5 sm:p-7">
-            {submitted ? (
-              <div className="flex min-h-52 flex-col items-center justify-center text-center">
-                <div className="mb-4 grid size-12 place-items-center rounded-sm border border-[#3A3D44] text-[#C9CACD]">
-                  <Check size={20} />
-                </div>
-                <h3 className="text-xl font-light">You&apos;re on the list.</h3>
-                <p className="mt-2 text-sm text-[#8D8E91]">We&apos;ll be in touch when Astra is ready.</p>
-              </div>
-            ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setSubmit(true) }} className="grid gap-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
-                    Your name
-                    <input required className="rounded-sm border border-[#3A3D44] bg-transparent px-3 py-3 text-sm font-normal text-white outline-none focus:border-[#C9CACD]" placeholder="Amina K." />
-                  </label>
-                  <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
-                    Phone or email
-                    <input required className="rounded-sm border border-[#3A3D44] bg-transparent px-3 py-3 text-sm font-normal text-white outline-none focus:border-[#C9CACD]" placeholder="you@example.com" />
-                  </label>
-                </div>
-                <label className="grid gap-1.5 text-xs font-medium uppercase tracking-widest text-[#8D8E91]">
-                  Business name
-                  <input required className="rounded-sm border border-[#3A3D44] bg-transparent px-3 py-3 text-sm font-normal text-white outline-none focus:border-[#C9CACD]" placeholder="Your store name" />
-                </label>
-                <button className="mt-1 flex items-center justify-center gap-2 rounded-sm border border-[#C9CACD] bg-white py-3.5 text-xs font-medium uppercase tracking-widest text-[#0B0B0D] transition hover:bg-[#E9E9EA]">
-                  Join the waitlist <ArrowRight size={13} />
-                </button>
-                <p className="text-center text-[11px] text-[#3A3D44]">No spam. Just useful updates from Astra.</p>
-              </form>
-            )}
-          </div>
+          {/* Contact form */}
+          <ContactForm />
         </div>
       </section>
 
