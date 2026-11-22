@@ -7,7 +7,7 @@ export interface WelcomeSellerData {
 
 export function welcomeSellerHtml({ name }: WelcomeSellerData): string {
   const firstName = name.split(' ')[0]
-  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
 
   return brandEmail({
     label: 'Seller Platform',
@@ -37,7 +37,7 @@ export function welcomeSellerHtml({ name }: WelcomeSellerData): string {
 
 export function welcomeSellerText({ name, email }: WelcomeSellerData): string {
   const firstName = name.split(' ')[0]
-  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
   return `Welcome, ${firstName}.
 
 Your seller account on Astra Technologies is ready.

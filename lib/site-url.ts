@@ -3,17 +3,17 @@
  *
  * Priority:
  *   1. NEXT_PUBLIC_APP_URL  — set in .env.local for local dev, in Vercel env vars for production
- *   2. http://localhost:3000 — fallback for local dev when the var isn't set
+ *   2. http://astra.africa/ — fallback for local dev when the var isn't set
  *
  * Usage:
- *   siteUrl()              → "http://localhost:3000"  (local)
+ *   siteUrl()              → "http://astra.africa/"  (local)
  *   siteUrl()              → "https://astra.africa"   (production)
  *   siteUrl('/s/my-store') → "https://astra.africa/s/my-store"
  */
 export function siteUrl(path = ''): string {
   const base =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_APP_URL) ||
-    'http://localhost:3000'
+    'http://astra.africa/'
   return base.replace(/\/$/, '') + (path ? '/' + path.replace(/^\//, '') : '')
 }
 

@@ -185,7 +185,7 @@ export async function requestPasswordReset(
       expiresAt,
     })
 
-    const baseUrl  = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+    const baseUrl  = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
     const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`
     // Must await — in a serverless environment the function is killed after the
     // response is sent, so a fire-and-forget promise would never complete.

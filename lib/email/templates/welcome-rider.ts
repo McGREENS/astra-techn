@@ -7,7 +7,7 @@ export interface WelcomeRiderData {
 
 export function welcomeRiderHtml({ name }: WelcomeRiderData): string {
   const firstName = name.split(' ')[0]
-  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
 
   return brandEmail({
     label: 'Rider Platform',
@@ -36,7 +36,7 @@ export function welcomeRiderHtml({ name }: WelcomeRiderData): string {
 
 export function welcomeRiderText({ name, email }: WelcomeRiderData): string {
   const firstName = name.split(' ')[0]
-  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl    = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
   return `Welcome, ${firstName}.
 
 Your rider account on Astra Technologies has been created.

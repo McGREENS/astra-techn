@@ -116,7 +116,7 @@ async function sendCompanyCredentials({
   to: string; companyName: string; contactName: string; tempPassword: string
 }) {
   const FROM     = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? 'contact@astra.africa'
-  const appUrl   = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl   = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
   const loginUrl = `${appUrl}/login`
   const firstName = contactName.split(' ')[0]
 

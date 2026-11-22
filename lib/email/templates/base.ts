@@ -20,7 +20,7 @@
  */
 
 function logoUrl(): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
   // Use the black no-tagline PNG for email (brand: no-tagline in headers)
   return `${base}/Astra-Logo/PNG/astra-logo-white-no-tagline.png`
 }
@@ -48,7 +48,7 @@ export function brandEmail({
   ctaUrl?:     string
   footerNote:  string
 }): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://astra.africa/'
 
   const stepsHtml = steps?.length ? `
     <tr>
